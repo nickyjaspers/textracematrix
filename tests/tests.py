@@ -52,9 +52,6 @@ def get_files(dir=os.path.dirname(os.path.abspath(__file__)), extension='*.*'):
 
 def get_requirements_and_testcases(file):
     mapping = dict()
-
-    AtTestEntries = 0
-    requirementsFound = 0   
     
     criteriaRequirement = False
     criteriaTest = False
@@ -63,30 +60,42 @@ def get_requirements_and_testcases(file):
         lines = f.readlines()
         linecnt = 0
         for line in lines:
+            # find requirements
+            if criteriaRequirement == False:
+                requirements = get_requirements_from_requirements_line(line)
+                if len(requirements) > 0:
+                    criteriaRequirement = True
 
-            # if all criteria true
-                #create entry in dictionary
-                #reset criteria
+            #find test
+            if criteriaRequirement == True and criteriaTest == False:
+                if is_test(line):
+                    criteriaTest = True
 
-            if '// REQ:' in line:
-                requirementsFound += 1
-            if '@Test' in line:
-                # get test method name as key, and previous requirement as value
-                mapping[linecnt] = lines[linecnt-1]
-                AtTestEntries += 1
-            linecnt += 1
-    return AtTestEntries, mapping, linecnt, requirementsFound
+            #find method name
+            if criteriaRequirement == True and criteriaTest == True and criteriaMethodName == False:
+                methodName = get_method_name(line)
+                if methodName != False:
+                    criteriaMethodName = True                
+
+            # check if al criteria met, add entry in mapping, and reset al criteria
+            if criteriaRequirement == True and criteriaTest == True and criteriaMethodName == True:
+                mapping[methodName] = requirements
+                criteriaRequirement = False
+                criteriaTest = False
+                criteriaMethodName = False
+
+    return mapping
 
 class TestGetFilesToParse(unittest.TestCase):
     def test_get_files(self):       
         files = get_files(extension='*.java')
         self.assertEqual(3, len(files))
 
-    def test_read_line(self):
+    def test_get_requirements_and_testcases(self):
         files = get_files(extension='file1.java')
         self.assertTrue(1, len(files))
-        testEntries = get_requirements_and_testcases(files[0])
-        self.assertEqual(2, testEntries[0])
+        traceMatrix = get_requirements_and_testcases(files[0])        
+        self.assertEqual(3, len(traceMatrix))
 
     def test_get_requirements_from_requirements_line(self):
         req = get_requirements_from_requirements_line('foo')

@@ -57,4 +57,18 @@ public class TestA {
         fail("Not yet implemented");    
     }
     
+
+    // REQ: 1, 2, 3, 4, 5
+    @Ignore
+    @Test
+    public void testTwo(){
+        fail("Not yet implemented");    
+    }    
+
+    // REQ: 1, 2, 3, 4, 5, 6
+    @Ignore
+    @Test   
+    public void testThree(){
+        fail("Not yet implemented");    
+    }        
 }
