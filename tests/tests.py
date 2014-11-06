@@ -43,11 +43,22 @@ class TestCodeParser(unittest.TestCase):
     def test_is_test(self):
         self.assertTrue(CodeParser().is_test('@Test'))
         self.assertTrue(CodeParser().is_test(' @Test '))
+        self.assertTrue(CodeParser().is_test(' @Test //some comment '))
 
     def test_get_test_method_name(self):
         self.assertFalse(CodeParser().get_method_name(' no method'))
         self.assertEqual('testTwo', CodeParser().get_method_name('    public void testTwo(){'))
         self.assertEqual('testOne', CodeParser().get_method_name('public void testOne(param){  //comment'))
+
+
+class MatrixWriter:
+    def __init__(self):
+        pass
+
+
+class TestMatrixWriter(unittest.TestCase):
+    def test_write_simple_matrix(self):
+        self.assertTrue(False)
 
 
 if __name__ == '__main__':
