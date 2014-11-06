@@ -1,7 +1,10 @@
 
 class CodeParser:
-    def __init__(self):
+    def __init__(self, req_pattern='// REQ:', test_pattern='@Test', method_pattern='public void '):
         self.req_test_mapping = dict()
+        self.req_pattern = req_pattern
+        self.test_pattern = test_pattern
+        self.method_pattern = method_pattern
 
     def get_requirements_and_test_cases(self, file_to_parse):
         requirements = None
@@ -31,27 +34,24 @@ class CodeParser:
                         criteria_requirement = False
                         criteria_test = False
 
-    @staticmethod
-    def get_requirements_from_requirements_line(line, pattern='// REQ:'):
+    def get_requirements_from_requirements_line(self, line):
         requirements = []
-        if pattern not in line:
+        if self.req_pattern not in line:
             return requirements
 
-        s = line.strip().lstrip(pattern)
+        s = line.strip().lstrip(self.req_pattern)
         for req in s.split(","):
             requirements.append(req.strip())
         return requirements
 
-    @staticmethod
-    def is_test(line, pattern='@Test'):
-        if pattern in line.strip():
+    def is_test(self, line):
+        if self.test_pattern in line.strip():
             return True
         return False
 
-    @staticmethod
-    def get_method_name(line, pattern='public void '):
-        if pattern not in line:
+    def get_method_name(self, line):
+        if self.method_pattern not in line:
             return False
 
-        s = line.strip().lstrip(pattern).split('(')
+        s = line.strip().lstrip(self.method_pattern).split('(')
         return s[0]
