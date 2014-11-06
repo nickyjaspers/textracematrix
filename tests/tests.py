@@ -52,13 +52,25 @@ class TestCodeParser(unittest.TestCase):
 
 
 class MatrixWriter:
-    def __init__(self):
-        pass
+    def __init__(self, req_tests_mapping):
+        self.req_tests_mapping = req_tests_mapping
+        self.requirements = set()
+
+    def get_requirements_set(self):
+        for key in self.req_tests_mapping:
+            for req in self.req_tests_mapping[key]:
+                self.requirements.add(req)
 
 
 class TestMatrixWriter(unittest.TestCase):
     def test_write_simple_matrix(self):
-        self.assertTrue(False)
+        mapping = dict()
+        mapping['a'] = ['req1', 'req2', 'req3']
+        mapping['b'] = ['req2', 'req3', 'req4']
+        writer = MatrixWriter(req_tests_mapping=mapping)
+        writer.get_requirements_set()
+        self.assertEqual(4, len(writer.requirements))
+        self.assertEqual(['req1', 'req2', 'req3', 'req4'], sorted(writer.requirements))
 
 
 if __name__ == '__main__':
