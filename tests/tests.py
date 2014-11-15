@@ -54,24 +54,66 @@ class TestCodeParser(unittest.TestCase):
 class MatrixWriter:
     def __init__(self, req_tests_mapping):
         self.req_tests_mapping = req_tests_mapping
-        self.requirements = set()
+        self.requirements = self.get_requirements_set()
 
     def get_requirements_set(self):
+        self.requirements = set()
+
         for key in self.req_tests_mapping:
             for req in self.req_tests_mapping[key]:
                 self.requirements.add(req)
 
+        return sorted(self.requirements)
+
+    def get_tests_for_requirement(self, requirement):
+        tests = list()
+        for key in self.req_tests_mapping:
+            if requirement in self.req_tests_mapping[key]:
+                tests.append(key)
+
+        return sorted(tests)
+
+    def write(self):
+        #filename = os.path.dirname(os.path.abspath(__file__)) + "matrix.tex"
+        filename = "matrix.tex"
+        f = open(filename, 'w')
+        f.write('\\begin{longtable}')
+
+        # write a fixed number of requirements, but the testcases relevant to those
+        # cases can be over multiple pages
+
+        f.write('\\end{longtable}')
+        #\begin{longtable}{|c|c|c|c|}
+        for req in self.requirements:
+            f.write(req + '\r\n')
 
 class TestMatrixWriter(unittest.TestCase):
-    def test_write_simple_matrix(self):
+    def test_get_requirements_set(self):
         mapping = dict()
         mapping['a'] = ['req1', 'req2', 'req3']
         mapping['b'] = ['req2', 'req3', 'req4']
         writer = MatrixWriter(req_tests_mapping=mapping)
-        writer.get_requirements_set()
         self.assertEqual(4, len(writer.requirements))
-        self.assertEqual(['req1', 'req2', 'req3', 'req4'], sorted(writer.requirements))
+        self.assertEqual(['req1', 'req2', 'req3', 'req4'], writer.requirements)
 
+
+    def test_get_tests_for_requirement(self):
+        mapping = dict()
+        mapping['a'] = ['req1', 'req2', 'req3']
+        mapping['b'] = ['req2', 'req3']
+        mapping['c'] = ['req3', 'req4']
+        writer = MatrixWriter(req_tests_mapping=mapping)
+        self.assertEqual(['a'], writer.get_tests_for_requirement('req1'))
+        self.assertEqual(['a', 'b'], writer.get_tests_for_requirement('req2'))
+        self.assertEqual(['a', 'b', 'c'], writer.get_tests_for_requirement('req3'))
+        self.assertEqual(['c'], writer.get_tests_for_requirement('req4'))
+
+    def test_write_matrix_file(self):
+        mapping = dict()
+        mapping['a'] = ['req1', 'req2', 'req3']
+        mapping['b'] = ['req2', 'req3', 'req4']
+        writer = MatrixWriter(req_tests_mapping=mapping)
+        writer.write()
 
 if __name__ == '__main__':
     unittest.main()
