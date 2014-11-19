@@ -82,15 +82,15 @@ class MatrixWriter:
         f = open(filename, 'w')
 
         # begin longtable definition
-        f.write('\\begin{longtable}')
+        f.write('\\begin{longtable}{')
         columns = 10
         for c in range(0, columns):
             f.write('|c')
-        f.write('|\r\n')
+        f.write('|}\n')
 
         #write caption
-        f.write('\\caption{Requirements traceability matrix}\\\\ \r\n')
-        f.write('\\hline \r\n')
+        f.write('\\caption{Requirements traceability matrix}\\\\ \n')
+        f.write('\\hline \n')
         # table header (requirements)
 
         columns = 10
@@ -102,11 +102,11 @@ class MatrixWriter:
             if c is not (columns - 1):
                 f.write(' & ')
             else:
-                f.write("\\\\ \r\n")
+                f.write("\\\\ \n")
 
-        f.write('\\hline \r\n')
-        f.write('\\endfirsthead \r\n')
-
+        f.write('\\hline \n')
+        f.write('\\endfirsthead \n')
+        f.write('\\end{longtable} \n')
         # write a fixed number of requirements, but the testcases relevant to those
         # cases can be over multiple pages
 
