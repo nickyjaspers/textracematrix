@@ -73,19 +73,46 @@ class MatrixWriter:
 
         return sorted(tests)
 
+    def get_result_for_test(self, test):
+        pass
+
     def write(self):
-        #filename = os.path.dirname(os.path.abspath(__file__)) + "matrix.tex"
+        # filename = os.path.dirname(os.path.abspath(__file__)) + "matrix.tex"
         filename = "matrix.tex"
         f = open(filename, 'w')
+
+        # begin longtable definition
         f.write('\\begin{longtable}')
+        columns = 10
+        for c in range(0, columns):
+            f.write('|c')
+        f.write('|\r\n')
+
+        #write caption
+        f.write('\\caption{Requirements traceability matrix}\\\\ \r\n')
+        f.write('\\hline \r\n')
+        # table header (requirements)
+
+        columns = 10
+        for c in range(0, columns):
+            f.write('\\textbf{')
+            if len(self.requirements) > c:
+                f.write(self.requirements[c])
+            f.write('}')
+            if c is not (columns - 1):
+                f.write(' & ')
+            else:
+                f.write("\\\\ \r\n")
+
+        f.write('\\hline \r\n')
+        f.write('\\endfirsthead \r\n')
 
         # write a fixed number of requirements, but the testcases relevant to those
         # cases can be over multiple pages
 
-        f.write('\\end{longtable}')
-        #\begin{longtable}{|c|c|c|c|}
         for req in self.requirements:
             f.write(req + '\r\n')
+
 
 class TestMatrixWriter(unittest.TestCase):
     def test_get_requirements_set(self):
@@ -95,7 +122,6 @@ class TestMatrixWriter(unittest.TestCase):
         writer = MatrixWriter(req_tests_mapping=mapping)
         self.assertEqual(4, len(writer.requirements))
         self.assertEqual(['req1', 'req2', 'req3', 'req4'], writer.requirements)
-
 
     def test_get_tests_for_requirement(self):
         mapping = dict()
@@ -114,6 +140,10 @@ class TestMatrixWriter(unittest.TestCase):
         mapping['b'] = ['req2', 'req3', 'req4']
         writer = MatrixWriter(req_tests_mapping=mapping)
         writer.write()
+
+    def test_get_result_for_test(self):
+        self.assertFalse(False)
+
 
 if __name__ == '__main__':
     unittest.main()
