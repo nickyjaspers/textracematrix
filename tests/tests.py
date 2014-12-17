@@ -76,42 +76,70 @@ class MatrixWriter:
     def get_result_for_test(self, test):
         pass
 
+    def write_table_header(self, columns, filename):
+        # begin longtable definition
+        filename.write('\\begin{longtable}{')
+        for c in range(0, columns):
+            filename.write('|c')
+        filename.write('|}\n')
+
+        #write caption
+        filename.write('\\caption{Requirements traceability matrix}\\\\ \n')
+        filename.write('\\hline \n')
+
+    def write_table_header_requirements(self, columns, filename):
+        filename.write('\\textbf{Req. ID} & ')
+
+        for c in range(0, columns - 1):
+            filename.write('\\textbf{')
+            if len(self.requirements) > c:
+                filename.write(self.requirements[c])
+            filename.write('}')
+            if c is not (columns - 2):
+                filename.write(' & ')
+            else:
+                filename.write("\\\\ \n")
+
+        filename.write('\\hline \n')
+        filename.write('\\endfirsthead \n')
+        filename.write('\\hline \n')
+
+    def write_table_test_cases(self, columns, filename):
+        filename.write('\\textbf{TestCase} & ')
+
+        for c in range(0, columns - 1):
+            filename.write('\\textbf{')
+            filename.write('}')
+            if c is not (columns - 2):
+                filename.write(' & ')
+            else:
+                filename.write("\\\\ \n")
+
+        filename.write('\\hline \n')
+
+    def write_table_footer(self, filename):
+        filename.write('\\end{longtable} \n')
+
+
     def write(self):
         # filename = os.path.dirname(os.path.abspath(__file__)) + "matrix.tex"
         filename = "matrix.tex"
         f = open(filename, 'w')
 
-        # begin longtable definition
-        f.write('\\begin{longtable}{')
-        columns = 10
-        for c in range(0, columns):
-            f.write('|c')
-        f.write('|}\n')
+        columns = 10;
+        self.write_table_header(columns, f)
 
-        #write caption
-        f.write('\\caption{Requirements traceability matrix}\\\\ \n')
-        f.write('\\hline \n')
-        # table header (requirements)
+        self.write_table_header_requirements(columns, f)
+        self.write_table_test_cases(columns, f)
 
-        columns = 10
-        for c in range(0, columns):
-            f.write('\\textbf{')
-            if len(self.requirements) > c:
-                f.write(self.requirements[c])
-            f.write('}')
-            if c is not (columns - 1):
-                f.write(' & ')
-            else:
-                f.write("\\\\ \n")
+        self.write_table_footer(f)
 
-        f.write('\\hline \n')
-        f.write('\\endfirsthead \n')
-        f.write('\\end{longtable} \n')
         # write a fixed number of requirements, but the testcases relevant to those
         # cases can be over multiple pages
-
         for req in self.requirements:
             f.write(req + '\r\n')
+
+        f.close()
 
 
 class TestMatrixWriter(unittest.TestCase):
