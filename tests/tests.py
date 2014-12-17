@@ -76,7 +76,7 @@ class MatrixWriter:
     def get_result_for_test(self, test):
         pass
 
-    def write_table_header(self, columns, filename):
+    def write_table_header(self, filename, columns):
         # begin longtable definition
         filename.write('\\begin{longtable}{')
         for c in range(0, columns):
@@ -87,10 +87,10 @@ class MatrixWriter:
         filename.write('\\caption{Requirements traceability matrix}\\\\ \n')
         filename.write('\\hline \n')
 
-    def write_table_header_requirements(self, columns, filename):
+    def write_table_header_requirements(self, filename, columns, range_start):
         filename.write('\\textbf{Req. ID} & ')
 
-        for c in range(0, columns - 1):
+        for c in range(range_start, columns - 1):
             filename.write('\\textbf{')
             if len(self.requirements) > c:
                 filename.write(self.requirements[c])
@@ -104,10 +104,10 @@ class MatrixWriter:
         filename.write('\\endfirsthead \n')
         filename.write('\\hline \n')
 
-    def write_table_test_cases(self, columns, filename):
+    def write_table_test_cases(self, filename, columns, range_start):
         filename.write('\\textbf{TestCase} & ')
 
-        for c in range(0, columns - 1):
+        for c in range(range_start, columns - 1):
             filename.write('\\textbf{')
             filename.write('}')
             if c is not (columns - 2):
@@ -126,12 +126,21 @@ class MatrixWriter:
         filename = "matrix.tex"
         f = open(filename, 'w')
 
-        columns = 10;
-        self.write_table_header(columns, f)
+        columns = 10
+        rangeCnt = 0
+        reqCnt = 1;
+        print self.requirements[10:20]
+        for req in self.requirements[rangeCnt * columns:(rangeCnt * columns) + columns]:
+            print rangeCnt * columns
+            print (rangeCnt * columns) + columns
+            print req
+            if reqCnt % columns is 0:
+                rangeCnt += 1
+            reqCnt += 1
 
-        self.write_table_header_requirements(columns, f)
-        self.write_table_test_cases(columns, f)
-
+        self.write_table_header(f, columns)
+        self.write_table_header_requirements(f, columns, 0)
+        self.write_table_test_cases(f, columns, 0)
         self.write_table_footer(f)
 
         # write a fixed number of requirements, but the testcases relevant to those
