@@ -1,4 +1,5 @@
 import unittest
+from math import ceil
 
 from code_parser import CodeParser
 from file_browser import FileBrowser
@@ -79,7 +80,7 @@ class MatrixWriter:
     def write_table_header(self, filename, columns):
         # begin longtable definition
         filename.write('\\begin{longtable}{')
-        for c in range(0, columns):
+        for c in range(0, columns + 1):
             filename.write('|c')
         filename.write('|}\n')
 
@@ -89,17 +90,15 @@ class MatrixWriter:
 
     def write_table_header_requirements(self, filename, columns, range_start):
         filename.write('\\textbf{Req. ID} & ')
-
-        for c in range(range_start, columns - 1):
+        cnt = 0;
+        for req in self.requirements[range_start:(range_start + columns)]:
+            cnt += 1
             filename.write('\\textbf{')
-            if len(self.requirements) > c:
-                filename.write(self.requirements[c])
+            filename.write(req)
             filename.write('}')
-            if c is not (columns - 2):
+            if cnt < len(self.requirements[range_start:(range_start + columns)]):
                 filename.write(' & ')
-            else:
-                filename.write("\\\\ \n")
-
+        filename.write("\\\\ \n")
         filename.write('\\hline \n')
         filename.write('\\endfirsthead \n')
         filename.write('\\hline \n')
@@ -107,15 +106,39 @@ class MatrixWriter:
     def write_table_test_cases(self, filename, columns, range_start):
         filename.write('\\textbf{TestCase} & ')
 
-        for c in range(range_start, columns - 1):
+        test_cases_for_requirement = list()
+        cnt = 0
+        for req in self.requirements[range_start:(range_start + columns)]:
+            cnt += 1
             filename.write('\\textbf{')
+            filename.write(str(len(self.get_tests_for_requirement(req))))
+            test_cases_for_requirement.append(self.get_tests_for_requirement(req))
             filename.write('}')
-            if c is not (columns - 2):
+            if cnt < len(self.requirements[range_start:(range_start + columns)]):
                 filename.write(' & ')
-            else:
-                filename.write("\\\\ \n")
-
+        filename.write("\\\\ \n")
         filename.write('\\hline \n')
+
+        test_cases_set = set()
+        for test_cases in test_cases_for_requirement:
+            for test_case in test_cases:
+                test_cases_set.add(test_case)
+
+        for test_case in test_cases_set:
+            filename.write('\\textbf{')
+            filename.write(test_case)
+            filename.write('} & ')
+            cnt = 0
+            for req in self.requirements[range_start:(range_start + columns)]:
+                cnt += 1
+                filename.write('\\textbf{')
+                #TODO check if test cases is passed failed when applicable
+                filename.write('}')
+                if cnt < len(self.requirements[range_start:(range_start + columns)]):
+                    filename.write(' & ')
+            filename.write("\\\\ \n")
+            filename.write('\\hline \n')
+
 
     def write_table_footer(self, filename):
         filename.write('\\end{longtable} \n')
@@ -126,27 +149,14 @@ class MatrixWriter:
         filename = "matrix.tex"
         f = open(filename, 'w')
 
-        columns = 10
-        rangeCnt = 0
-        reqCnt = 1;
-        print self.requirements[10:20]
-        for req in self.requirements[rangeCnt * columns:(rangeCnt * columns) + columns]:
-            print rangeCnt * columns
-            print (rangeCnt * columns) + columns
-            print req
-            if reqCnt % columns is 0:
-                rangeCnt += 1
-            reqCnt += 1
-
-        self.write_table_header(f, columns)
-        self.write_table_header_requirements(f, columns, 0)
-        self.write_table_test_cases(f, columns, 0)
-        self.write_table_footer(f)
-
-        # write a fixed number of requirements, but the testcases relevant to those
-        # cases can be over multiple pages
-        for req in self.requirements:
-            f.write(req + '\r\n')
+        columns = 8
+        iterations = 0
+        while iterations < ceil(float(len(self.requirements)) / float(columns)):
+            self.write_table_header(f, columns)
+            self.write_table_header_requirements(f, columns, iterations * columns)
+            self.write_table_test_cases(f, columns, iterations * columns)
+            self.write_table_footer(f)
+            iterations += 1
 
         f.close()
 
@@ -173,13 +183,23 @@ class TestMatrixWriter(unittest.TestCase):
 
     def test_write_matrix_file(self):
         mapping = dict()
-        mapping['a'] = ['req1', 'req2', 'req3']
-        mapping['b'] = ['req2', 'req3', 'req4']
+        mapping['a'] = ['req1', 'req2', 'req3', 'req4', 'req5', 'req6', 'req7', 'req8', 'req9']
+        mapping['b'] = ['req7', 'req8', 'req9', 'req10', 'req11', 'req12', 'req13', 'req14', 'req15']
+        mapping['c'] = ['req7']
+        mapping['d'] = ['req8']
+        mapping['e'] = ['req9']
+        mapping['f'] = ['req9']
+        mapping['g'] = ['req9']
+        mapping['h'] = ['req10']
+        mapping['i'] = ['req11']
+        mapping['j'] = ['req12']
+        mapping['k'] = ['req13', 'req14', 'req15', 'req17','req18', 'req19', 'req20', 'req21']
         writer = MatrixWriter(req_tests_mapping=mapping)
         writer.write()
 
+    @unittest.skip("not implemented yet")
     def test_get_result_for_test(self):
-        self.assertFalse(False)
+        self.assertFalse(True)
 
 
 if __name__ == '__main__':
