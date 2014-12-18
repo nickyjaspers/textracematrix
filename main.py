@@ -4,6 +4,7 @@ import os
 
 from code_parser import CodeParser
 from file_browser import FileBrowser
+from matrix_writer import MatrixWriter
 
 
 def usage():
@@ -45,9 +46,8 @@ def main():
     parser = CodeParser()
     for f in files:
         parser.get_requirements_and_test_cases(f)
-
-    print parser.req_test_mapping
-
+    writer = MatrixWriter(parser.req_test_mapping)
+    writer.write()
 
 if __name__ == "__main__":
     main()
