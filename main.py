@@ -8,25 +8,25 @@ from matrix_writer import MatrixWriter
 
 
 def usage():
-    print "==============================================="
-    print "Get requirements trace matrix mapping for files"
-    print ""
-    print "-d [BASEDIR] (default = '.')"
-    print "-e [FILE EXTENSION] (default = '*.java')"
-    print ""
-    print "A mapping is recognized when following pattern is found in a file:"
-    print "// REQ: req1, req2"
-    print "@Test"
-    print "public void TestMethod()"
-    print ""
-    print "==============================================="
+    print("===============================================")
+    print("Get requirements trace matrix mapping for files")
+    print("")
+    print("-d [BASEDIR] (default = '.')")
+    print("-e [FILE EXTENSION] (default = '*.java')")
+    print("")
+    print("A mapping is recognized when following pattern is found in a file:")
+    print("// REQ: req1, req2")
+    print("@Test")
+    print("public void TestMethod()")
+    print("")
+    print("===============================================")
 
 
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hd:e:", ["help", "basedir", "extension"])
     except getopt.GetoptError as err:
-        print str(err)
+        print(str(err))
         usage()
         sys.exit(2)
     extension = '*.java'
@@ -48,6 +48,7 @@ def main():
         parser.get_requirements_and_test_cases(f)
     writer = MatrixWriter(parser.req_test_mapping)
     writer.write()
+
 
 if __name__ == "__main__":
     main()
