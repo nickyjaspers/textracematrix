@@ -88,10 +88,6 @@ class TestMatrixWriter(unittest.TestCase):
         writer = MatrixWriter(req_tests_mapping=mapping)
         writer.write()
 
-    @unittest.skip("not implemented yet")
-    def test_get_result_for_test(self):
-        self.assertFalse(True)
-
 
 if __name__ == '__main__':
     unittest.main()
